@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mood Analyzer</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <h1>Mood Analyzer</h1>
+    <div class="input-section">
+        <label for="user-input">Enter your text:</label>
+        <textarea id="user-input" rows="4" cols="50"></textarea>
+        <button id="analyze-button">Analyze</button>
+    </div>
+    <div class="output-section">
+        <h2>Analysis Result:</h2>
+        <p id="analysis-result"></p>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const userInput = document.getElementById("user-input");
+            const analyzeButton = document.getElementById("analyze-button");
+            const analysisResult = document.getElementById("analysis-result");
+
+            analyzeButton.addEventListener("click", async () => {
+                const text = userInput.value;
+
+                // You should replace 'your_backend_url' with the actual URL of your backend API endpoint.
+                const backendUrl = 'http://127.0.0.1:5000/analyze';
+
+                const data = { message: text };
+
+                try {
+                    const response = await fetch(backendUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    });
+
+                    if (response.status === 200) {
+                        const result = await response.json();
+                        analysisResult.textContent = result.message;
+                    } else {
+                        analysisResult.textContent = 'Error: Unable to analyze the text.';
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    analysisResult.textContent = 'An error occurred while connecting to the server.';
+                }
+            });
+        });
+
+    </script>
+</body>
+
+</html>
