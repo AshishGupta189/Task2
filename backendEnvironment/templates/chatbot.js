@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const sendButton = document.getElementById("send-button");
     const url='http://127.0.0.1:5000/generate-text';
 
+    let typingMessageElement = null;
+
 
     sendButton.addEventListener("click", function () {
         const userMessage = userInputElement.value;
@@ -17,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function callAssistantAPI(userMessage) {
         try{
+            console.log("here");
             const response=await fetch(url,{
                 method: 'POST',
                 headers: {
@@ -24,10 +27,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
                 body: JSON.stringify({userMessage}),
             })
+            console.log("m1");
             if(response.ok){
                 const data=await response.json();
                 console.log(data)
-                simulateAssistantResponse(data.assistantReply)
+                removeTypingMessage();
+                simulateAssistantResponse(data['assistant_reply'])
             }else{
                 console.log("error")
             }
@@ -37,40 +42,13 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         
     }
-    
-        // async function callAssistantAPI(userMessage) {
-        //     let response;
-        //     try{
-        //         console.log("function called");
-        //         // Make the API request and handle the response
-        //         await fetch(url, {
-        //             method: 'POST',
-        //             headers: {
-        //                 'Content-Type': 'application/json'
-        //             },
-        //             body: JSON.stringify({ userMessage })
-        //         })
 
-        //         // .then(response => {
-        //         //     if (!response.ok) {
-        //         //         throw new Error('Network response was not ok');
-        //         //     }
-        //         //     console.log("here")
-        //         //     return response.json();
-        //         // })
-        //         // .then(data => {
-        //         //     // Handle the response from the backend
-        //         //     console.log("There")
-        //         //     simulateAssistantResponse(data.assistantReply); // Here, 'data' contains the response data
-        //         // })
-        //         // .catch(error => {
-        //         //     // Handle any errors that occurred during the fetch
-        //         //     console.error('Error:', error);
-        //         // })
-        //     }catch(error){
-        //         console.error('Error:', error);
-        //     }
-        // }
+    function removeTypingMessage() {
+        if (typingMessageElement) {
+            chatBox.removeChild(typingMessageElement);
+            typingMessageElement = null;
+        }
+    }
                 
     function appendUserMessage(message) {
         const messageElement = createMessageElement(message, "user-message");
@@ -89,12 +67,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     function createTypingMessage() {
-        return createMessageElement("Assistant is typing...", "assistant-message message-text typing");
+        typingMessageElement= createMessageElement("Assistant is typing...", "assistant-message message-text typing");
+        return typingMessageElement;
     }
 
     function createAssistantMessage(message) {
         console.log("function called message");
-        return createMessageElement(message, "assistant-message");
+        const messageElement= createMessageElement(message, "assistant-message");
+        chatBox.appendChild(messageElement);
     }
 
     function createMessageElement(message, className) {
@@ -109,11 +89,5 @@ document.addEventListener("DOMContentLoaded", function () {
         return messageElement;
     }
 
-    // function replaceLastTypingWithResponse(responseMessage) {
-    //     const typingMessages = document.querySelectorAll(".message-text.typing");
-    //     if (typingMessages.length > 0) {
-    //         chatBox.replaceChild(responseMessage, typingMessages[typingMessages.length - 1].parentNode);
-    //     }
-    // }
 });
 

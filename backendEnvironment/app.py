@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Your OpenAI API key
-api_key = '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'
+api_key = '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'
 
 # Define the API endpoint
 GPT3_API_URL = "https://api.openai.com/v1/chat/completions"
@@ -26,13 +26,10 @@ conversation_history = []
 @app.route('/generate-text', methods=['POST'])
 def generate_text():
     global conversation_history
-    print("function called")
     try:
         # Get the user's message from the request
-        print("function try")
         user_message = request.get_json()
         mess=user_message['userMessage']
-        print("function called")
         # Add the user's message to the conversation history
         conversation_history.append({"role": "user", "content": mess})
         print(mess)
@@ -47,18 +44,16 @@ def generate_text():
                 "model": "gpt-3.5-turbo"
         }
         response = requests.post(GPT3_API_URL, headers=headers, data=json.dumps(payload))
-        print(conversation_history)
-        print(response)
         # Check if the request was successful
         if response.status_code == 200:
             data = response.json()
-            print("success")
+
             assistant_reply = data["choices"][0]["message"]["content"]
             # Add the assistant's reply to the conversation history if needed
-            print("suces1")
-            conversation_history.append({"role": "assistant", "content": assistant_reply})
+
+            conversation_history.append({"role": "system", "content": assistant_reply})
             # print("succ2")
-            print(assistant_reply)
+    
             return jsonify({"assistant_reply": assistant_reply})
         else:
             print("Error:", response.status_code, response.text)
