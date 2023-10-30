@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Your OpenAI API key
-api_key = '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'
+api_key = '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'
 
 # Define the API endpoint
 GPT3_API_URL = "https://api.openai.com/v1/chat/completions"
@@ -20,7 +20,9 @@ def route_with_cors():
     data = {"message": "CORS is enabled for this route"}
     return jsonify(data)
 
-
+@app.route("/")
+def welcome():
+    return render_template('home.html')
 # Maintain context between user interactions
 conversation_history = []
 @app.route('/generate-text', methods=['POST'])
